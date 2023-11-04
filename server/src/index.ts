@@ -1,6 +1,7 @@
 import express from "express";
 import { Express, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import cros from "cors";
 
 const prisma = new PrismaClient();
 
@@ -8,6 +9,7 @@ const app: Express = express();
 const PORT = 8080;
 
 app.use(express.json());
+app.use(cros());
 
 app.get("/allTodos", async (req: Request, res: Response) => {
   const allTodos = await prisma.todo.findMany();
