@@ -1,3 +1,4 @@
+import { API_URL } from "@/constants/url";
 import useSWR from "swr";
 
 async function fetcher(key: string) {
@@ -6,7 +7,7 @@ async function fetcher(key: string) {
 
 export const useTodos = () => {
   const { data, isLoading, error, mutate } = useSWR(
-    "http://localhost:8080/allTodos",
+    `${API_URL}/allTodos`,
     fetcher
   );
 

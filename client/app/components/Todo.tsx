@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TodoType } from "../types";
 import { useTodos } from "../hooks/useTodos";
+import { API_URL } from "@/constants/url";
 
 type TodoProps = {
   todo: TodoType;
@@ -14,16 +15,13 @@ const Todo = ({ todo }: TodoProps) => {
   const handleEdit = async () => {
     setIsEditing(!isEditing);
     if (isEditing) {
-      const response = await fetch(
-        `http://localhost:8080/editTodo/${todo.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ title: editedTitle }),
-        }
-      );
+      const response = await fetch(`${API_URL}/editTodo/${todo.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: editedTitle }),
+      });
       if (response.ok) {
         const editedTodo = await response.json();
         const updatedTodos = todos.map((todo: TodoType) =>
@@ -35,12 +33,9 @@ const Todo = ({ todo }: TodoProps) => {
   };
 
   const handleDelete = async (id: number) => {
-    const response = await fetch(
-      `http://localhost:8080/deleteTodo/${todo.id}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const response = await fetch(`${API_URL}/deleteTodo/${todo.id}`, {
+      method: "DELETE",
+    });
 
     if (response.ok) {
       const deletedTodo = await response.json();
@@ -50,7 +45,7 @@ const Todo = ({ todo }: TodoProps) => {
   };
 
   const toggleTodoCompletion = async (id: Number, isCompleted: boolean) => {
-    const response = await fetch(`http://localhost:8080/editTodo/${todo.id}`, {
+    const response = await fetch(`${API_URL}/editTodo/${todo.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
