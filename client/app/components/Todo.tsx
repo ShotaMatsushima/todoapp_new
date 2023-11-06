@@ -26,9 +26,43 @@ const Todo = ({ todo }: TodoProps) => {
       );
       if (response.ok) {
         const editedTodo = await response.json();
-        mutate([...todos, editedTodo]);
-        setEditedTitle("");
+        const updatedTodos = todos.map((todo: TodoType) =>
+          todo.id === editedTodo.id ? editedTodo : todo
+        );
+        mutate(updatedTodos);
       }
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    const response = await fetch(
+      `http://localhost:8080/deleteTodo/${todo.id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (response.ok) {
+      const deletedTodo = await response.json();
+      const updatedTodos = todos.filter((todo: TodoType) => todo.id !== id);
+      mutate(updatedTodos);
+    }
+  };
+
+  const toggleTodoCompletion = async (id: Number, isCompleted: boolean) => {
+    const response = await fetch(`http://localhost:8080/editTodo/${todo.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ isCompleted: !isCompleted }),
+    });
+    if (response.ok) {
+      const editedTodo = await response.json();
+      const updatedTodos = todos.map((todo: TodoType) =>
+        todo.id === editedTodo.id ? editedTodo : todo
+      );
+      mutate(updatedTodos);
     }
   };
   return (
@@ -42,6 +76,7 @@ const Todo = ({ todo }: TodoProps) => {
               type="checkbox"
               className="h-4 w-4 text-teal-600 focus:ring-teal-500
                   border-gray-300 rounded"
+              onChange={() => toggleTodoCompletion(todo.id, todo.isCompleted)}
             />
             <label className="ml-3 block text-gray-900">
               {isEditing ? (
@@ -52,7 +87,14 @@ const Todo = ({ todo }: TodoProps) => {
                   onChange={(e) => setEditedTitle(e.target.value)}
                 />
               ) : (
-                <span className="text-lg font-medium mr-2"> {todo.title} </span>
+                <span
+                  className={`text-lg font-medium mr-2 ${
+                    todo.isCompleted ? "line-through" : ""
+                  }`}
+                >
+                  {" "}
+                  {todo.title}{" "}
+                </span>
               )}
             </label>
           </div>
@@ -63,7 +105,10 @@ const Todo = ({ todo }: TodoProps) => {
             >
               {isEditing ? "✔" : "✏"}
             </button>
-            <button className="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 rounded">
+            <button
+              onClick={() => handleDelete(todo.id)}
+              className="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 rounded"
+            >
               ✖
             </button>
           </div>
